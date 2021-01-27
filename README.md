@@ -1,2 +1,3 @@
 # passwordwallet
- Password Wallet Application
+Password Wallet Application
+Written using Python and Django
