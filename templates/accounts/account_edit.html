@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %} | Account {% endblock %}
+
+{% block content %}
+
+{% include 'alert.html' %}
+
+<section id="account" class="bg-light py-5">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-md-6 mx-auto">
+                <div class="card">
+                    <div class="card-body">
+                        <form action="{% url 'save' account.id %}" method="POST" autocomplete="off">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="web_address">Website</label>
+                                <input type="text" name="web_address" class="form-control" value="{{ account.web_address }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="login">Login</label>
+                                <input type="text" name="login" class="form-control" value="{{ account.login }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="text" name="password" class="form-control" value="{{ clean_password }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <input type="text" name="description" class="form-control" value="{{ account.description }}">
+                            </div>
+                            {% if owner %}
+                                    <input type="submit" value="Save" class="btn btn-success btn-block">
+                                    <a href="{% url 'delete' account.id %}" class="btn btn-danger btn-block">Delete</a> 
+                            {% endif %}
+                            <br>
+                            {% if owner %}
+                                {% if available_users %}
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Share with:
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            {% for av_user in available_users %}
+                                            <a class="dropdown-item" href="{% url 'share' account.id av_user.id %}">{{ av_user.user.username }}</a>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+                <a href="{% url 'wallet_edit' %}" class="btn btn-link">Back to wallet</a>
+            </div>      
+        </div>
+
+        {% if last_activity %}
+        <div class="row">
+            <h3>Your last activity:</h3>
+            <div class="alert alert-primary col-md-12" role="alert">
+                {{ last_activity.action }} {{ last_activity.account.web_address }} <a href="{% url 'undo' last_activity.id %}" class="btn btn-link">Undo</a>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="row">
+            <h3>Your activities:</h3>
+            {% if activities %}
+                {% for activity in activities %}
+                <div class="alert alert-dark col-md-12" role="alert">
+                    {{ activity.action }} {{ activity.account.web_address }}
+                </div>
+                {% endfor %}
+            {% else %}
+            <div class="alert alert-dark col-md-12" role="alert">
+                No activities
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</section>
+{% endblock %}

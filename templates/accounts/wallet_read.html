@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+    <div class="container">
+            <ul class="navbar-nav">
+                <li 
+                    {% if 'changepassword' in request.path %}
+                        class="nav-item active mr-3"
+                    {% else %}
+                        class="nav-item mr-3"
+                    {% endif %}
+                >
+                    <a class="nav-link" href="{% url 'changepassword' %}">Change password</a>
+                </li>
+            </ul>
+
+            <ul class="navbar-nav ml-auto">
+                {% if user.is_authenticated %}
+                    <li class="nav-item mr-3">
+                        <a href="javascript:{document.getElementById('logout').submit()}" class="nav-link">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                        <form action="{% url 'logout' %}" id="logout" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden">
+                        </form>
+                    </li>
+                {% else %}
+                    <li
+                        {% if 'register' in request.path %}
+                            class="nav-item active mr-3"
+                        {% else %}
+                            class="nav-item mr-3"
+                        {% endif %}
+                    >
+                        <a class="nav-link" href="{% url 'register' %}">
+                            <i class="fas fa-user-plus"></i> 
+                            Register
+                        </a>
+                    </li>
+                    <li
+                        {% if 'login' in request.path %}
+                            class="nav-item active mr-3"
+                        {% else %}
+                            class="nav-item mr-3"
+                        {% endif %}
+                    >
+                        <a class="nav-link" href="{% url 'login' %}">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Login
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        
+    </div>
+</nav>
+
+{% include 'alert.html' %}
+
+<section id="wallet" class="bg-light py-5">
+    <div class="container">
+
+        <div class="row">
+            <div class="alert alert-info col-md-12" style="margin-bottom: 15px;">
+                Current IP Address: {{ ip_address }}
+            </div>
+        </div>
+
+        <div class="row">
+            <a href="{% url 'wallet_edit' %}" class="btn btn-dark">Switch to edit mode</a>
+        </div>
+
+        <div class="row">
+            <h3>Your passwords:</h3>
+            {% if user_accounts %}
+                {% for user_account in user_accounts %}
+                    {% if user_account.deleted == False %}
+                    <div class="alert alert-primary col-md-12">
+                        <div>
+                            <div>
+                                <h3>Website: {{ user_account.web_address }}</h3>
+                            </div>
+                            <div>
+                                Login: {{ user_account.login }}
+                            </div>
+                            <br>
+                            <a href="{% url 'account_read' user_account.id %}" class="btn btn-light">Details</a>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-primary col-md-12">
+                    You don't have any passwords!
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="row">
+            <h3>Passwords shared with you:</h3>
+            {% if shared_accounts %}
+                {% for shared_account in shared_accounts %}
+                    {% if shared_account.deleted == False %}
+                    <div class="alert alert-secondary col-md-12">
+                        <div>
+                            <div>
+                                <h3>Website: {{ shared_account.web_address }}</h3>
+                            </div>
+                            <div>
+                                Login: {{ shared_account.login }}
+                            </div>
+                            <br>
+                            <a href="{% url 'account_read' shared_account.id %}" class="btn btn-light">Details</a>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-secondary col-md-12">
+                    Nobody have shared passwords with you
+                </div>
+            {% endif %}
+        </div>
+
+        {% if last_activity %}
+        <div class="row">
+            <h3>Your last activity:</h3>
+            <div class="alert alert-primary col-md-12" role="alert">
+                {{ last_activity.action }} {{ last_activity.account.web_address }}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="row">
+            <h3>Your activities:</h3>
+            {% if activities %}
+                {% for activity in activities %}
+                <div class="alert alert-dark col-md-12" role="alert">
+                    {{ activity.action }} {{ activity.account.web_address }}
+                </div>
+                {% endfor %}
+            {% else %}
+            <div class="alert alert-dark col-md-12" role="alert">
+                No activities
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</section>
+{% endblock %}

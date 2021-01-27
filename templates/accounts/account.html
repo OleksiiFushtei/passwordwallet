@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %} | Account {% endblock %}
+
+{% block content %}
+
+<section id="account" class="bg-light py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 mx-auto">
+                <div class="card">
+                    <div class="card-body">
+                        <form 
+                            {% if account %}
+                                action="{% url 'delete' account.id %}"
+                            {% else %} 
+                                action="{% url 'create' %}"
+                            {% endif %}
+                            method="POST" autocomplete="off">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="web_address">Website</label>
+                                {% if account %}
+                                    <input type="text" name="web_address" class="form-control" value="{{ account.web_address }}" readonly>
+                                {% else %}
+                                    <input type="text" name="web_address" class="form-control" required>
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                <label for="login">Login</label>
+                                {% if account %}
+                                    <input type="text" name="login" class="form-control" value="{{ account.login }}" readonly>
+                                {% else %}
+                                    <input type="text" name="login" class="form-control" required>
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                {% if account %}
+                                    <input type="text" name="password" class="form-control" value="{{ clean_password }}" readonly>
+                                {% else %}
+                                    <input type="text" name="password" class="form-control" required>
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                {% if account %}
+                                    <input type="text" name="description" class="form-control" value="{{ account.description }}" readonly>
+                                {% else %}
+                                    <input type="text" name="description" class="form-control" required>
+                                {% endif %}
+                            </div>
+                            {% if account %}
+                                {% if owner %}
+                                    <input type="submit" value="Delete" class="btn btn-danger btn-block">
+                                {% endif %}
+                            {% else %}
+                                <input type="submit" value="Create" class="btn btn-success btn-block">
+                            {% endif %}
+                            {% if account %}
+                                {% if owner %}
+                                    {% if available_users %}
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Share with:
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                {% for av_user in available_users %}
+                                                    <a class="dropdown-item" href="{% url 'share' account.id av_user.id %}">{{ av_user.user.username }}</a>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+                <a href="{% url 'wallet' %}" class="btn btn-link">Back to wallet</a>
+            </div>      
+        </div>
+    </div>
+</section>
+{% endblock %}
